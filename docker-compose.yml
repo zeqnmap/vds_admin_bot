@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  telegram-bot:
+    build: .
+    container_name: vds_bot
+    restart: unless-stopped
+    environment:
+      - TZ=Europe/Minsk
+      - PYTHONUNBUFFERED=1
+      - PYTHONTHREADS=8
+      - OMP_NUM_THREADS=8
+    volumes:
+      - ./logs:/app/logs
+      - ./.env:/app/.env
+      - ./production_bot.db:/app/production_bot.db
