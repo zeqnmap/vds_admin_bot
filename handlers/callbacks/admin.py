@@ -46,7 +46,7 @@ async def admin_add_project_start(callback: CallbackQuery, state: FSMContext, db
 async def admin_workshop_selected(callback: CallbackQuery, state: FSMContext):
     workshop_code = callback.data.replace("admin_workshop_", "")
     await state.update_data(workshop_code=workshop_code)
-    await callback.message.edit_text("Введите название нового проекта (можно кириллицей):", reply_markup=get_cancel_keyboard())
+    await callback.message.edit_text("Введите название нового проекта:", reply_markup=get_cancel_keyboard())
     await state.set_state(AdminFSM.waiting_for_project_name)
     await callback.answer()
 

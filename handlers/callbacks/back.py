@@ -10,7 +10,7 @@ router = Router()
 @router.callback_query(F.data == "back_to_production")
 async def back_to_production(callback: CallbackQuery, state: FSMContext, db: Database):
     await state.clear()
-    workshops = await db.get_workshops()
+    workshops = await db.get_workshops_prod()
     text = "⚙️ Производство\n\nВыберите цех:"
     await callback.message.edit_text(text, reply_markup=get_production_menu_keyboard(workshops))
     await callback.answer()

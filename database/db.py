@@ -32,6 +32,14 @@ class Database:
             ''')
 
             await db.execute('''
+                CREATE TABLE IF NOT EXISTS workshops_for_prod (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    name TEXT NOT NULL,
+                    code TEXT UNIQUE NOT NULL
+                )
+            ''')
+
+            await db.execute('''
                 CREATE TABLE IF NOT EXISTS reports (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     user_id INTEGER,
@@ -59,6 +67,7 @@ class Database:
 
             await db.commit()
             await self._populate_initial_data(db)
+            await self._populate_initial_data_prod(db)
 
     @classmethod
     async def _populate_initial_data(cls, db):
@@ -68,9 +77,27 @@ class Database:
             ('Заготовительный цех', 'preparatory'),
             ('Сборочный цех', 'assembly'),
             ('Цех RVI', 'rvi'),
+            ('Продажи', 'sales'),
+            ('КБ', 'kb'),
+            ('Креатив', 'creative'),
+            ('Логистика', 'logistics'),
+            ('Монтаж', 'installation'),
         ]
         for name, code in workshops:
             await db.execute('INSERT OR IGNORE INTO workshops (name, code) VALUES (?, ?)', (name, code))
+        await db.commit()
+
+    @classmethod
+    async def _populate_initial_data_prod(cls, db):
+        workshops_prod = [
+            ('Цех сварки', 'welding'),
+            ('Вспомогательный цех', 'auxiliary'),
+            ('Заготовительный цех', 'preparatory'),
+            ('Сборочный цех', 'assembly'),
+            ('Цех RVI', 'rvi')
+        ]
+        for name, code in workshops_prod:
+            await db.execute('INSERT OR IGNORE INTO workshops_for_prod (name, code) VALUES (?, ?)', (name, code))
         await db.commit()
 
     async def add_user(self, user_id: int, username: Optional[str] = None):
@@ -82,6 +109,13 @@ class Database:
         async with aiosqlite.connect(self.db_path) as db:
             db.row_factory = aiosqlite.Row
             async with db.execute('SELECT id, name, code FROM workshops ORDER BY id') as cursor:
+                rows = await cursor.fetchall()
+                return [Workshop(id=row['id'], name=row['name'], code=row['code']) for row in rows]
+
+    async def get_workshops_prod(self) -> List[Workshop]:
+        async with aiosqlite.connect(self.db_path) as db:
+            db.row_factory = aiosqlite.Row
+            async with db.execute('SELECT id, name, code FROM workshops_for_prod ORDER BY id') as cursor:
                 rows = await cursor.fetchall()
                 return [Workshop(id=row['id'], name=row['name'], code=row['code']) for row in rows]
 

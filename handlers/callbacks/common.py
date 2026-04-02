@@ -17,6 +17,8 @@ PROBLEM_NAMES = {
     'other': 'Другое'
 }
 
+PRODUCTION_WORKSHOPS = ['welding', 'auxiliary', 'preparatory', 'assembly', 'rvi']
+
 async def finalize_report(bot, message: Message, state: FSMContext, db: Database):
     data = await state.get_data()
     workshop_code = data.get('workshop_code')
@@ -39,26 +41,38 @@ async def finalize_report(bot, message: Message, state: FSMContext, db: Database
 
     # Отправка уведомления
     if ADMIN_CHAT_ID:
+        from datetime import datetime
+        now = datetime.now().strftime("%d-%m-%Y %H:%M")
         workshop_names = {
             'welding': 'цеха сварки',
             'auxiliary': 'вспомогательного цеха',
             'preparatory': 'заготовительного цеха',
             'assembly': 'сборочного цеха',
             'rvi': 'цеха RVI',
+            'creative': 'креатива',
+            'sales': 'продаж',
+            'kb': 'КБ',
+            'logistics': 'логистики',
+            'installation': 'монтажа',
         }
+        if workshop_code in PRODUCTION_WORKSHOPS:
+            role = "Мастер"
+        else:
+            role = "Специалист"
+
         name = workshop_names.get(workshop_code, 'цеха')
-        text = f"🔧 **Отчёт {name}**\n"
-        text += f"Мастер: {data.get('fullname', 'не указан')}\n"
+        text = f"Отчёт {name}\n"
+        text += f"Дата: {now}\n"
+        text += f"{role}: {data.get('fullname', 'не указан')}\n"
         text += f"Проект: {data.get('project_code', 'не указан')}\n"
-        text += f"Цвет: {'🟢 Зелёный' if data.get('color') == 'green' else '🔴 Красный'}\n"
-        if data.get('report_type'):
-            text += f"Тип: {data['report_type']}\n"
+        text += f"{'🟢 Зелёный' if data.get('color') == 'green' else '🔴 Красный'}\n"
+
         if data.get('problem_type'):
             prob_name = PROBLEM_NAMES.get(data['problem_type'], data['problem_type'])
             text += f"Проблема: {prob_name}\n"
         if data.get('description'):
             text += f"Описание: {data['description']}\n"
-        await bot.send_message(ADMIN_CHAT_ID, text, parse_mode="Markdown")
+        await bot.send_message(ADMIN_CHAT_ID, text)
         if data.get('photo_path') and os.path.exists(data['photo_path']):
             await bot.send_photo(ADMIN_CHAT_ID, photo=FSInputFile(data['photo_path']))
 

@@ -7,6 +7,11 @@ from .assembly import router as assembly_router
 from .rvi import router as rvi_router
 from .common import router as common_router
 from .admin import router as admin_router
+from .creative import router as creative_router
+from .sales import router as sales_router
+from .kb import router as kb_router
+from .logistics import router as logistics_router
+from .installation import router as installation_router
 
 from aiogram import Router
 
@@ -20,5 +25,10 @@ main_callback_router.include_router(assembly_router)
 main_callback_router.include_router(rvi_router)
 main_callback_router.include_router(common_router)
 main_callback_router.include_router(admin_router)
+main_callback_router.include_router(creative_router)
+main_callback_router.include_router(sales_router)
+main_callback_router.include_router(kb_router)
+main_callback_router.include_router(logistics_router)
+main_callback_router.include_router(installation_router)
 
 __all__ = ['main_callback_router']

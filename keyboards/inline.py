@@ -1,15 +1,17 @@
 from aiogram.types import InlineKeyboardMarkup
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from typing import List
-from database.models import Workshop, Project
+from database.models import Workshop
 
 def get_main_menu_keyboard() -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
-    builder.button(text="🔧 КБ", callback_data="direction_kb")
+    builder.button(text="📊 Продажи", callback_data="direction_sales")
     builder.button(text="🎨 Креатив", callback_data="direction_creative")
-    builder.button(text="🏭 Продукт", callback_data="direction_product")
+    builder.button(text="✏️ КБ", callback_data="direction_kb")
     builder.button(text="⚙️ Производство", callback_data="direction_production")
-    builder.adjust(2, 2)
+    builder.button(text="🚛 Логистика", callback_data="direction_logistics")
+    builder.button(text="🛠 Монтаж", callback_data="direction_installation")
+    builder.adjust(2)
     return builder.as_markup()
 
 def get_production_menu_keyboard(workshops: List[Workshop]) -> InlineKeyboardMarkup:

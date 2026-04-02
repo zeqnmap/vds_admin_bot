@@ -74,10 +74,13 @@ async def process_efficiency(callback: CallbackQuery, state: FSMContext, db: Dat
             color='green',
         )
         if ADMIN_CHAT_ID:
+            from datetime import datetime
+            now = datetime.now().strftime("%d-%m-%Y %H:%M")
             text = f"🔧 Отчёт сборочного цеха\n"
+            text += f"Дата: {now}\n"
             text += f"Мастер: {data['fullname']}\n"
             text += f"Проект: {data['project_code']}\n"
-            text += f"Цвет: 🟢 Зелёный\n"
+            text += f"🟢 Зелёный\n"
             await callback.bot.send_message(ADMIN_CHAT_ID, text)
         await callback.message.edit_text("Отлично! 👍")
         await state.clear()
