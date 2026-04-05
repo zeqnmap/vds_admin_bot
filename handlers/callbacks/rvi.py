@@ -13,18 +13,25 @@ from keyboards.inline import (get_attach_photo_keyboard,
 from utils.logger_conf import setup_logger
 
 from .common import finalize_report
-from .states import WeldingFSM
+from .states import RviFSM
 
 logger = setup_logger(__name__)
 router = Router()
 
+PROBLEM_NAMES = {
+    "terms": "Сроки",
+    "supply": "Поставки",
+    "staff": "Персонал",
+    "other": "Другое",
+}
 
-@router.callback_query(F.data == "workshop_welding")
-async def start_welding(callback: CallbackQuery, state: FSMContext):
+
+@router.callback_query(F.data == "workshop_rvi")
+async def start_rvi(callback: CallbackQuery, state: FSMContext):
     await state.clear()
-    await state.set_state(WeldingFSM.fullname)
-    await state.update_data(workshop_code="welding")
-    text = "👨‍🏭 Цех сварки\n\nВведите ваши ФИО:"
+    await state.set_state(RviFSM.fullname)
+    await state.update_data(workshop_code="rvi")
+    text = "🔧 Цех RVI\n\nВведите ваши ФИО:"
     kb = InlineKeyboardMarkup(
         inline_keyboard=[
             [InlineKeyboardButton(text="🔙 Назад", callback_data="back_to_production")]
@@ -34,7 +41,7 @@ async def start_welding(callback: CallbackQuery, state: FSMContext):
     await callback.answer()
 
 
-@router.message(WeldingFSM.fullname)
+@router.message(RviFSM.fullname)
 async def process_fullname(message: Message, state: FSMContext, db: Database):
     fullname = message.text.strip()
     if not fullname:
@@ -52,21 +59,21 @@ async def process_fullname(message: Message, state: FSMContext, db: Database):
     await message.answer(
         "Выберите проект:", reply_markup=get_projects_keyboard(projects)
     )
-    await state.set_state(WeldingFSM.project)
+    await state.set_state(RviFSM.project)
 
 
-@router.callback_query(WeldingFSM.project, F.data.startswith("project_"))
+@router.callback_query(RviFSM.project, F.data.startswith("project_"))
 async def process_project(callback: CallbackQuery, state: FSMContext):
     project_code = callback.data.replace("project_", "")
     await state.update_data(project_code=project_code)
     await callback.message.edit_text(
         "Оцените эффективность работы:", reply_markup=get_efficiency_keyboard()
     )
-    await state.set_state(WeldingFSM.efficiency)
+    await state.set_state(RviFSM.efficiency)
     await callback.answer()
 
 
-@router.callback_query(WeldingFSM.efficiency, F.data.startswith("efficiency_"))
+@router.callback_query(RviFSM.efficiency, F.data.startswith("efficiency_"))
 async def process_efficiency(callback: CallbackQuery, state: FSMContext, db: Database):
     color = callback.data.replace("efficiency_", "")
     await state.update_data(color=color)
@@ -85,7 +92,7 @@ async def process_efficiency(callback: CallbackQuery, state: FSMContext, db: Dat
 
             now = datetime.now().strftime("%d-%m-%Y %H:%M")
             text = f"🔧 Отчёт Производства\n"
-            text += f"Сварочный цех\n\n"
+            text += f"RVI цех\n\n"
             text += f"Дата: {now}\n"
             text += f"Мастер: {data['fullname']}\n"
             text += f"Проект: {data['project_code']}\n"
@@ -101,40 +108,40 @@ async def process_efficiency(callback: CallbackQuery, state: FSMContext, db: Dat
         await callback.message.edit_text(
             "Выберите причину:", reply_markup=get_red_reason_keyboard()
         )
-        await state.set_state(WeldingFSM.red_reason)
+        await state.set_state(RviFSM.red_reason)
         await callback.answer()
 
 
-@router.callback_query(WeldingFSM.red_reason, F.data == "red_questions")
+@router.callback_query(RviFSM.red_reason, F.data == "red_questions")
 async def red_questions(callback: CallbackQuery, state: FSMContext):
     await state.update_data(report_type="question")
     await callback.message.edit_text("📝 Напишите ваш вопрос:")
-    await state.set_state(WeldingFSM.question_desc)
+    await state.set_state(RviFSM.question_desc)
     await callback.answer()
 
 
-@router.callback_query(WeldingFSM.red_reason, F.data == "red_problems")
+@router.callback_query(RviFSM.red_reason, F.data == "red_problems")
 async def red_problems(callback: CallbackQuery, state: FSMContext):
     await state.update_data(report_type="problem")
     await callback.message.edit_text(
         "Выберите тип проблемы:", reply_markup=get_problem_type_keyboard()
     )
-    await state.set_state(WeldingFSM.problem_type)
+    await state.set_state(RviFSM.problem_type)
     await callback.answer()
 
 
-@router.callback_query(WeldingFSM.problem_type, F.data.startswith("problem_"))
+@router.callback_query(RviFSM.problem_type, F.data.startswith("problem_"))
 async def process_problem_type(callback: CallbackQuery, state: FSMContext):
     problem_type = callback.data.replace("problem_", "")
     await state.update_data(problem_type=problem_type)
     await callback.message.edit_text(
         "Опишите проблему текстом:", reply_markup=get_problem_desc_keyboard()
     )
-    await state.set_state(WeldingFSM.problem_desc)
+    await state.set_state(RviFSM.problem_desc)
     await callback.answer()
 
 
-@router.message(WeldingFSM.problem_desc, F.text)
+@router.message(RviFSM.problem_desc, F.text)
 async def process_problem_text(message: Message, state: FSMContext):
     desc = message.text.strip()
     if not desc:
@@ -145,14 +152,14 @@ async def process_problem_text(message: Message, state: FSMContext):
         "Теперь вы можете приложить фото или пропустить:",
         reply_markup=get_attach_photo_keyboard(),
     )
-    await state.set_state(WeldingFSM.photo_optional)
+    await state.set_state(RviFSM.photo_optional)
 
 
-@router.message(WeldingFSM.question_desc, F.text)
+@router.message(RviFSM.question_desc, F.text)
 async def process_question(message: Message, state: FSMContext, db: Database):
-    text = message.text.strip()
-    if not text:
+    q = message.text.strip()
+    if not q:
         await message.answer("❌ Вопрос не может быть пустым.")
         return
-    await state.update_data(description=text)
+    await state.update_data(description=q)
     await finalize_report(message.bot, message, state, db)
