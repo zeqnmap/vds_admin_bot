@@ -1,19 +1,27 @@
-from aiogram import Router, F
-from aiogram.types import CallbackQuery
+from aiogram import F, Router
 from aiogram.fsm.context import FSMContext
+from aiogram.types import CallbackQuery
+
 from database.db import Database
-from keyboards.inline import get_production_menu_keyboard, get_red_reason_keyboard
-from .states import WeldingFSM, AuxiliaryFSM, PreparatoryFSM, AssemblyFSM, RviFSM
+from keyboards.inline import (get_production_menu_keyboard,
+                              get_red_reason_keyboard)
+
+from .states import (AssemblyFSM, AuxiliaryFSM, PreparatoryFSM, RviFSM,
+                     WeldingFSM)
 
 router = Router()
+
 
 @router.callback_query(F.data == "back_to_production")
 async def back_to_production(callback: CallbackQuery, state: FSMContext, db: Database):
     await state.clear()
     workshops = await db.get_workshops_prod()
     text = "⚙️ Производство\n\nВыберите цех:"
-    await callback.message.edit_text(text, reply_markup=get_production_menu_keyboard(workshops))
+    await callback.message.edit_text(
+        text, reply_markup=get_production_menu_keyboard(workshops)
+    )
     await callback.answer()
+
 
 @router.callback_query(F.data == "back_to_red_reason")
 async def back_to_red_reason(callback: CallbackQuery, state: FSMContext):
@@ -31,5 +39,7 @@ async def back_to_red_reason(callback: CallbackQuery, state: FSMContext):
         await state.set_state(RviFSM.red_reason)
     else:
         await state.clear()
-    await callback.message.edit_text("Выберите причину:", reply_markup=get_red_reason_keyboard())
+    await callback.message.edit_text(
+        "Выберите причину:", reply_markup=get_red_reason_keyboard()
+    )
     await callback.answer()

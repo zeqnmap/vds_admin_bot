@@ -1,5 +1,6 @@
 from aiogram.fsm.state import State, StatesGroup
 
+
 class WeldingFSM(StatesGroup):
     fullname = State()
     project = State()
@@ -9,6 +10,7 @@ class WeldingFSM(StatesGroup):
     problem_desc = State()
     question_desc = State()
     photo_optional = State()
+
 
 class AuxiliaryFSM(StatesGroup):
     fullname = State()
@@ -20,6 +22,7 @@ class AuxiliaryFSM(StatesGroup):
     question_desc = State()
     photo_optional = State()
 
+
 class PreparatoryFSM(StatesGroup):
     fullname = State()
     project = State()
@@ -29,6 +32,7 @@ class PreparatoryFSM(StatesGroup):
     problem_desc = State()
     question_desc = State()
     photo_optional = State()
+
 
 class AssemblyFSM(StatesGroup):
     fullname = State()
@@ -40,6 +44,7 @@ class AssemblyFSM(StatesGroup):
     question_desc = State()
     photo_optional = State()
 
+
 class RviFSM(StatesGroup):
     fullname = State()
     project = State()
@@ -50,7 +55,9 @@ class RviFSM(StatesGroup):
     question_desc = State()
     photo_optional = State()
 
+
 # ====================== АДМИН ======================
+
 
 class AdminFSM(StatesGroup):
     waiting_for_workshop_add = State()
@@ -58,7 +65,9 @@ class AdminFSM(StatesGroup):
     waiting_for_workshop_remove = State()
     waiting_for_project_remove = State()
 
+
 # ====================== КРЕАТИВ ======================
+
 
 class CreativeFSM(StatesGroup):
     fullname = State()
@@ -70,7 +79,9 @@ class CreativeFSM(StatesGroup):
     question_desc = State()
     photo_optional = State()
 
+
 # ====================== ПРОДАЖИ ======================
+
 
 class SalesFSM(StatesGroup):
     fullname = State()
@@ -82,7 +93,9 @@ class SalesFSM(StatesGroup):
     question_desc = State()
     photo_optional = State()
 
+
 # ====================== КБ ======================
+
 
 class KbFSM(StatesGroup):
     fullname = State()
@@ -94,7 +107,9 @@ class KbFSM(StatesGroup):
     question_desc = State()
     photo_optional = State()
 
+
 # ====================== ЛОГИСТИКА ======================
+
 
 class LogisticsFSM(StatesGroup):
     fullname = State()
@@ -106,7 +121,9 @@ class LogisticsFSM(StatesGroup):
     question_desc = State()
     photo_optional = State()
 
+
 # ====================== МОНТАЖ ======================
+
 
 class InstallationFSM(StatesGroup):
     fullname = State()

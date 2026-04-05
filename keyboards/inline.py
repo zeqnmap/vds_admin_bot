@@ -1,7 +1,10 @@
+from typing import List
+
 from aiogram.types import InlineKeyboardMarkup
 from aiogram.utils.keyboard import InlineKeyboardBuilder
-from typing import List
+
 from database.models import Workshop
+
 
 def get_main_menu_keyboard() -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
@@ -14,6 +17,7 @@ def get_main_menu_keyboard() -> InlineKeyboardMarkup:
     builder.adjust(2)
     return builder.as_markup()
 
+
 def get_production_menu_keyboard(workshops: List[Workshop]) -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
     for w in workshops:
@@ -22,26 +26,29 @@ def get_production_menu_keyboard(workshops: List[Workshop]) -> InlineKeyboardMar
     builder.adjust(2)
     return builder.as_markup()
 
+
 def get_under_construction_keyboard() -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
     builder.button(text="🔙 Назад", callback_data="back_to_main")
     return builder.as_markup()
 
+
 def get_projects_keyboard(projects) -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
     for p in projects:
-        if hasattr(p, 'name') and hasattr(p, 'code'):
+        if hasattr(p, "name") and hasattr(p, "code"):
             name = p.name
             code = p.code
         elif isinstance(p, dict):
-            name = p.get('name')
-            code = p.get('code')
+            name = p.get("name")
+            code = p.get("code")
         else:
             continue
         builder.button(text=name, callback_data=f"project_{code}")
     builder.button(text="🔙 Назад", callback_data="back_to_production")
     builder.adjust(2)
     return builder.as_markup()
+
 
 def get_efficiency_keyboard() -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
@@ -50,6 +57,7 @@ def get_efficiency_keyboard() -> InlineKeyboardMarkup:
     builder.adjust(2)
     return builder.as_markup()
 
+
 def get_red_reason_keyboard() -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
     builder.button(text="❓ Вопросы", callback_data="red_questions")
@@ -57,6 +65,7 @@ def get_red_reason_keyboard() -> InlineKeyboardMarkup:
     builder.button(text="🔙 Назад", callback_data="back_to_production")
     builder.adjust(2)
     return builder.as_markup()
+
 
 def get_problem_type_keyboard() -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
@@ -68,10 +77,12 @@ def get_problem_type_keyboard() -> InlineKeyboardMarkup:
     builder.adjust(2)
     return builder.as_markup()
 
+
 def get_problem_desc_keyboard() -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
     builder.button(text="🔙 Назад", callback_data="back_to_red_reason")
     return builder.as_markup()
+
 
 def get_attach_photo_keyboard() -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
@@ -79,6 +90,7 @@ def get_attach_photo_keyboard() -> InlineKeyboardMarkup:
     builder.button(text="⏩ Пропустить", callback_data="skip_photo")
     builder.adjust(2)
     return builder.as_markup()
+
 
 def get_admin_menu_keyboard() -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
@@ -88,6 +100,7 @@ def get_admin_menu_keyboard() -> InlineKeyboardMarkup:
     builder.adjust(1)
     return builder.as_markup()
 
+
 def get_workshops_keyboard(workshops, prefix="workshop_"):
     builder = InlineKeyboardBuilder()
     for w in workshops:
@@ -96,13 +109,15 @@ def get_workshops_keyboard(workshops, prefix="workshop_"):
     builder.adjust(2)
     return builder.as_markup()
 
+
 def get_workshop_projects_keyboard(projects, prefix="project_"):
     builder = InlineKeyboardBuilder()
     for p in projects:
-        builder.button(text=p['name'], callback_data=f"{prefix}{p['code']}")
+        builder.button(text=p["name"], callback_data=f"{prefix}{p['code']}")
     builder.button(text="🔙 Назад", callback_data="admin_cancel")
     builder.adjust(2)
     return builder.as_markup()
+
 
 def get_cancel_keyboard():
     builder = InlineKeyboardBuilder()
