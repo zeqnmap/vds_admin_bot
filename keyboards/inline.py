@@ -45,7 +45,7 @@ def get_projects_keyboard(projects) -> InlineKeyboardMarkup:
         else:
             continue
         builder.button(text=name, callback_data=f"project_{code}")
-    builder.button(text="🔙 Назад", callback_data="back_to_production")
+    builder.button(text="🔙 Назад", callback_data="back_to_main")
     builder.adjust(2)
     return builder.as_markup()
 
@@ -62,7 +62,7 @@ def get_red_reason_keyboard() -> InlineKeyboardMarkup:
     builder = InlineKeyboardBuilder()
     builder.button(text="❓ Вопросы", callback_data="red_questions")
     builder.button(text="⚠️ Проблемы", callback_data="red_problems")
-    builder.button(text="🔙 Назад", callback_data="back_to_production")
+    builder.button(text="🔙 Назад", callback_data="back_to_main")
     builder.adjust(2)
     return builder.as_markup()
 
@@ -76,6 +76,8 @@ def get_problem_type_keyboard() -> InlineKeyboardMarkup:
     builder.button(text="🔙 Назад", callback_data="back_to_red_reason")
     builder.adjust(2)
     return builder.as_markup()
+
+# TODO сделать другие типы проблем
 
 
 def get_problem_desc_keyboard() -> InlineKeyboardMarkup:
