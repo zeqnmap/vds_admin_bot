@@ -134,3 +134,39 @@ class InstallationFSM(StatesGroup):
     problem_desc = State()
     question_desc = State()
     photo_optional = State()
+
+# ======================  ======================
+
+class PassportFSM(StatesGroup):
+    fullname = State()
+    project = State()
+    efficiency = State()
+    red_reason = State()
+    problem_type = State()
+    problem_desc = State()
+    question_desc = State()
+    photo_optional = State()
+
+# ======================  ======================
+
+class SupplyFSM(StatesGroup):
+    fullname = State()
+    project = State()
+    efficiency = State()
+    red_reason = State()
+    problem_type = State()
+    problem_desc = State()
+    question_desc = State()
+    photo_optional = State()
+
+# ======================  ======================
+
+class EconomicsFSM(StatesGroup):
+    fullname = State()
+    project = State()
+    efficiency = State()
+    red_reason = State()
+    problem_type = State()
+    problem_desc = State()
+    question_desc = State()
+    photo_optional = State()

@@ -86,6 +86,9 @@ class Database:
             ("Креатив", "creative"),
             ("Логистика", "logistics"),
             ("Монтаж", "installation"),
+            ("Паспортизация", "passport"),
+            ("Снабжение", "supply"),
+            ("Экономика", "economics"),
         ]
         for name, code in workshops:
             await db.execute(

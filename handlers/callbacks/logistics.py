@@ -9,9 +9,7 @@ from config import ADMIN_CHAT_ID
 from database.db import Database
 from keyboards.inline import (get_attach_photo_keyboard,
                               get_efficiency_keyboard, get_main_menu_keyboard,
-                              get_problem_desc_keyboard,
-                              get_problem_type_keyboard, get_projects_keyboard,
-                              get_red_reason_keyboard)
+                              get_problem_desc_keyboard,get_projects_keyboard)
 from utils.logger_conf import setup_logger
 
 from .common import finalize_report
@@ -105,40 +103,13 @@ async def process_efficiency(callback: CallbackQuery, state: FSMContext, db: Dat
         )
         await callback.answer()
     else:
+        problem_type = callback.data.replace("problem_", "")
+        await state.update_data(problem_type=problem_type)
         await callback.message.edit_text(
-            "Выберите причину:", reply_markup=get_red_reason_keyboard()
+            "Опишите проблему текстом:", reply_markup=get_problem_desc_keyboard()
         )
-        await state.set_state(LogisticsFSM.red_reason)
+        await state.set_state(LogisticsFSM.problem_desc)
         await callback.answer()
-
-
-@router.callback_query(LogisticsFSM.red_reason, F.data == "red_questions")
-async def red_questions(callback: CallbackQuery, state: FSMContext):
-    await state.update_data(report_type="question")
-    await callback.message.edit_text("📝 Напишите ваш вопрос:")
-    await state.set_state(LogisticsFSM.question_desc)
-    await callback.answer()
-
-
-@router.callback_query(LogisticsFSM.red_reason, F.data == "red_problems")
-async def red_problems(callback: CallbackQuery, state: FSMContext):
-    await state.update_data(report_type="problem")
-    await callback.message.edit_text(
-        "Выберите тип проблемы:", reply_markup=get_problem_type_keyboard()
-    )
-    await state.set_state(LogisticsFSM.problem_type)
-    await callback.answer()
-
-
-@router.callback_query(LogisticsFSM.problem_type, F.data.startswith("problem_"))
-async def process_problem_type(callback: CallbackQuery, state: FSMContext):
-    problem_type = callback.data.replace("problem_", "")
-    await state.update_data(problem_type=problem_type)
-    await callback.message.edit_text(
-        "Опишите проблему текстом:", reply_markup=get_problem_desc_keyboard()
-    )
-    await state.set_state(LogisticsFSM.problem_desc)
-    await callback.answer()
 
 
 @router.message(LogisticsFSM.problem_desc, F.text)
@@ -154,15 +125,6 @@ async def process_problem_text(message: Message, state: FSMContext):
     )
     await state.set_state(LogisticsFSM.photo_optional)
 
-
-@router.message(LogisticsFSM.question_desc, F.text)
-async def process_question(message: Message, state: FSMContext, db: Database):
-    text = message.text.strip()
-    if not text:
-        await message.answer("❌ Вопрос не может быть пустым.")
-        return
-    await state.update_data(description=text)
-    await finalize_report(message.bot, message, state, db)
 
 
 @router.callback_query(F.data == "skip_photo")
