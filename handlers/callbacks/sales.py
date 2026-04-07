@@ -85,7 +85,7 @@ async def process_efficiency(callback: CallbackQuery, state: FSMContext, db: Dat
             from datetime import datetime
 
             now = datetime.now().strftime("%d-%m-%Y %H:%M")
-            text = f"📊 Отчёт продаж\n\n"
+            text = f"📊 Отчёт Продаж\n\n"
             text += f"Дата: {now}\n"
             text += f"Специалист: {data['fullname']}\n"
             text += f"Проект: {data['project_code']}\n"

@@ -103,8 +103,6 @@ async def process_efficiency(callback: CallbackQuery, state: FSMContext, db: Dat
         )
         await callback.answer()
     else:
-        problem_type = callback.data.replace("problem_", "")
-        await state.update_data(problem_type=problem_type)
         await callback.message.edit_text(
             "Опишите проблему текстом:", reply_markup=get_problem_desc_keyboard()
         )

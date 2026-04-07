@@ -9,8 +9,7 @@ from config import ADMIN_CHAT_ID
 from database.db import Database
 from keyboards.inline import (get_attach_photo_keyboard,
                               get_efficiency_keyboard, get_main_menu_keyboard,
-                              get_problem_desc_keyboard, get_projects_keyboard,
-                              get_red_reason_keyboard)
+                              get_problem_desc_keyboard, get_projects_keyboard)
 from utils.logger_conf import setup_logger
 
 from .common import finalize_report
@@ -97,8 +96,6 @@ async def process_efficiency(callback: CallbackQuery, state: FSMContext, db: Dat
         )
         await callback.answer()
     else:
-        problem_type = callback.data.replace("problem_", "")
-        await state.update_data(problem_type=problem_type)
         await callback.message.edit_text(
             "Опишите проблему текстом:", reply_markup=get_problem_desc_keyboard()
         )
