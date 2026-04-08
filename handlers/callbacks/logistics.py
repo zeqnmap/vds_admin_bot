@@ -67,7 +67,7 @@ async def process_project(callback: CallbackQuery, state: FSMContext):
     project_code = callback.data.replace("project_", "")
     await state.update_data(project_code=project_code)
     await callback.message.edit_text(
-        "Оцените эффективность работы:", reply_markup=get_efficiency_keyboard()
+        "Оцените статус своей задачи по проекту:", reply_markup=get_efficiency_keyboard()
     )
     await state.set_state(LogisticsFSM.efficiency)
     await callback.answer()
@@ -90,7 +90,7 @@ async def process_efficiency(callback: CallbackQuery, state: FSMContext, db: Dat
             from datetime import datetime
 
             now = datetime.now().strftime("%d-%m-%Y %H:%M")
-            text = f"🚛 Отчёт логистики\n\n"
+            text = f"🚛 Отчёт Логистики\n\n"
             text += f"Дата: {now}\n"
             text += f"Специалист: {data['fullname']}\n"
             text += f"Проект: {data['project_code']}\n"

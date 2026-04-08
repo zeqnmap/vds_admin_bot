@@ -13,4 +13,4 @@ services:
     volumes:
       - ./logs:/app/logs
       - ./.env:/app/.env
-      - ./production_bot.db:/app/production_bot.db
+      - ./production_database.db:/app/production_database.db

@@ -60,7 +60,7 @@ async def process_project(callback: CallbackQuery, state: FSMContext):
     project_code = callback.data.replace("project_", "")
     await state.update_data(project_code=project_code)
     await callback.message.edit_text(
-        "Оцените эффективность работы:", reply_markup=get_efficiency_keyboard()
+        "Оцените статус своей задачи по проекту:", reply_markup=get_efficiency_keyboard()
     )
     await state.set_state(CreativeFSM.efficiency)
     await callback.answer()

@@ -52,5 +52,5 @@ async def back_to_efficiency(callback: CallbackQuery, state: FSMContext):
         await state.set_state(f"{class_name}:efficiency")
     else:
         await state.clear()
-    await callback.message.edit_text("Оцените эффективность работы:", reply_markup=get_efficiency_keyboard())
+    await callback.message.edit_text("Оцените статус своей задачи по проекту:", reply_markup=get_efficiency_keyboard())
     await callback.answer()
