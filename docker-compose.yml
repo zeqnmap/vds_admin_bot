@@ -3,7 +3,7 @@ version: '3.8'
 services:
   telegram-bot:
     build: .
-    container_name: vds_bot
+    container_name: vds_factory_bot
     restart: unless-stopped
     environment:
       - TZ=Europe/Minsk
@@ -13,4 +13,4 @@ services:
     volumes:
       - ./logs:/app/logs
       - ./.env:/app/.env
-      - ./production_bot.db:/app/production_bot.db
+      - ./production_database.db:/app/production_database.db

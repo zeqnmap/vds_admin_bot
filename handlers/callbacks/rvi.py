@@ -8,7 +8,7 @@ from database.db import Database
 from keyboards.inline import (get_attach_photo_keyboard,
                               get_efficiency_keyboard, get_main_menu_keyboard,
                               get_problem_desc_keyboard,
-                              get_problem_type_keyboard, get_projects_keyboard,
+                              get_problem_production_keyboard, get_projects_keyboard,
                               get_red_reason_keyboard)
 from utils.logger_conf import setup_logger
 
@@ -67,7 +67,7 @@ async def process_project(callback: CallbackQuery, state: FSMContext):
     project_code = callback.data.replace("project_", "")
     await state.update_data(project_code=project_code)
     await callback.message.edit_text(
-        "Оцените эффективность работы:", reply_markup=get_efficiency_keyboard()
+        "Оцените статус своей задачи по проекту:", reply_markup=get_efficiency_keyboard()
     )
     await state.set_state(RviFSM.efficiency)
     await callback.answer()
@@ -124,7 +124,7 @@ async def red_questions(callback: CallbackQuery, state: FSMContext):
 async def red_problems(callback: CallbackQuery, state: FSMContext):
     await state.update_data(report_type="problem")
     await callback.message.edit_text(
-        "Выберите тип проблемы:", reply_markup=get_problem_type_keyboard()
+        "Выберите тип проблемы:", reply_markup=get_problem_production_keyboard()
     )
     await state.set_state(RviFSM.problem_type)
     await callback.answer()

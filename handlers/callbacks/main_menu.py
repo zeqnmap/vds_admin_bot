@@ -68,3 +68,19 @@ async def direction_installation(callback: CallbackQuery, state: FSMContext):
     from .installation import start_installation
 
     await start_installation(callback, state)
+
+
+@router.callback_query(F.data == "direction_passport")
+async def direction_passport(callback: CallbackQuery, state: FSMContext):
+    from .passport import start_passport
+    await start_passport(callback, state)
+
+@router.callback_query(F.data == "direction_supply")
+async def direction_supply(callback: CallbackQuery, state: FSMContext):
+    from .supply import start_supply
+    await start_supply(callback, state)
+
+@router.callback_query(F.data == "direction_economics")
+async def direction_economics(callback: CallbackQuery, state: FSMContext):
+    from .economics import start_economics
+    await start_economics(callback, state)

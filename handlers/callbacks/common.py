@@ -1,9 +1,7 @@
 import os
-
 from aiogram import F, Router
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, FSInputFile, Message
-
 from config import ADMIN_CHAT_ID, UPLOADS_DIR
 from database.db import Database
 from keyboards.inline import get_main_menu_keyboard
@@ -12,15 +10,41 @@ from utils.logger_conf import setup_logger
 logger = setup_logger(__name__)
 router = Router()
 
-PROBLEM_NAMES = {
-    "terms": "Сроки",
-    "supply": "Поставки",
-    "staff": "Персонал",
-    "other": "Другое",
+PROBLEM_NAMES_COMMON = {
+    'terms': 'Сроки',
+    'supply': 'Поставки',
+    'staff': 'Персонал',
+    'other': 'Другое',
+    'machine': 'Оборудование',
+    'equipment': 'Комплектация',
+}
+
+PROBLEM_NAMES_SALE = {
+    'contracting': 'Контрактование',
+    'advance': 'Авансирование',
+    'deadline': 'Сроки',
+    'activation': 'Актирование',
+    'payment': 'Поступление ДС (100%)',
+    'other': 'Другое',
+}
+
+PROBLEM_NAMES_INSTALLATION = {
+    'terms': 'Сроки',
+    'staff': 'Персонал',
+    'equipment': 'Комплектация',
+    'other': 'Другое',
 }
 
 PRODUCTION_WORKSHOPS = ["welding", "auxiliary", "preparatory", "assembly", "rvi"]
 
+def get_problem_name(workshop_code: str, problem_code: str) -> str:
+    """Возвращает человекочитаемое название проблемы в зависимости от направления"""
+    if workshop_code == 'sales':
+        return PROBLEM_NAMES_SALE.get(problem_code, problem_code)
+    elif workshop_code == 'installation':
+        return PROBLEM_NAMES_INSTALLATION.get(problem_code, problem_code)
+    else:
+        return PROBLEM_NAMES_COMMON.get(problem_code, problem_code)
 
 async def finalize_report(bot, message: Message, state: FSMContext, db: Database):
     data = await state.get_data()
@@ -42,10 +66,8 @@ async def finalize_report(bot, message: Message, state: FSMContext, db: Database
         photo_path=data.get("photo_path"),
     )
 
-    # Отправка уведомления
     if ADMIN_CHAT_ID:
         from datetime import datetime
-
         now = datetime.now().strftime("%d-%m-%Y %H:%M")
         workshop_names = {
             "welding": "Цех сварки",
@@ -58,13 +80,14 @@ async def finalize_report(bot, message: Message, state: FSMContext, db: Database
             "kb": "КБ",
             "logistics": "Логистики",
             "installation": "Монтажа",
+            'passport': 'Паспортизации',
+            'supply': 'Снабжения',
+            'economics': 'Экономики',
         }
 
         if workshop_code in PRODUCTION_WORKSHOPS:
             role = "Мастер"
-            # Две строки: сначала "Отчёт Производства", затем название цеха
-            text = "Отчёт Производства\n"
-            text += f"{workshop_names.get(workshop_code)}\n\n"
+            text = f"Отчёт Производства\n{workshop_names.get(workshop_code)}\n\n"
         else:
             role = "Специалист"
             text = f"Отчёт {workshop_names.get(workshop_code)}\n\n"
@@ -75,10 +98,11 @@ async def finalize_report(bot, message: Message, state: FSMContext, db: Database
         text += f"{'🟢 Зелёный' if data.get('color') == 'green' else '🔴 Красный'}\n"
 
         if data.get("problem_type"):
-            prob_name = PROBLEM_NAMES.get(data["problem_type"], data["problem_type"])
+            prob_name = get_problem_name(workshop_code, data["problem_type"])
             text += f"Проблема: {prob_name}\n"
         if data.get("description"):
             text += f"Описание: {data['description']}\n"
+
         await bot.send_message(ADMIN_CHAT_ID, text)
         if data.get("photo_path") and os.path.exists(data["photo_path"]):
             await bot.send_photo(ADMIN_CHAT_ID, photo=FSInputFile(data["photo_path"]))
@@ -88,7 +112,6 @@ async def finalize_report(bot, message: Message, state: FSMContext, db: Database
     await message.answer("Главное меню:", reply_markup=get_main_menu_keyboard())
 
 
-# Общий обработчик для кнопки "Приложить фото"
 @router.callback_query(F.data == "attach_photo")
 async def attach_photo(callback: CallbackQuery, state: FSMContext):
     current_state = await state.get_state()
@@ -96,11 +119,9 @@ async def attach_photo(callback: CallbackQuery, state: FSMContext):
         await callback.answer("Кнопка не активна", show_alert=True)
         return
     await callback.message.edit_text("📸 Отправьте фото (одно):")
-    # Состояние остаётся photo_optional, но текст сообщения меняется
     await callback.answer()
 
 
-# Общий обработчик для кнопки "Пропустить фото"
 @router.callback_query(F.data == "skip_photo")
 async def skip_photo(callback: CallbackQuery, state: FSMContext, db: Database):
     current_state = await state.get_state()
@@ -112,17 +133,14 @@ async def skip_photo(callback: CallbackQuery, state: FSMContext, db: Database):
     await callback.answer()
 
 
-# Общий обработчик для приёма фото (после нажатия "Приложить фото")
 @router.message(F.photo)
 async def handle_photo(message: Message, state: FSMContext, db: Database):
     current_state = await state.get_state()
     if not current_state or not current_state.endswith("photo_optional"):
-        # Если не ожидаем фото, просто игнорируем или отвечаем
         return
-    # Скачиваем фото
     photo = message.photo[-1]
     file = await message.bot.get_file(photo.file_id)
-    # Имя файла: цех_айди_уникальный.jpg
+
     workshop_code = (await state.get_data()).get("workshop_code", "unknown")
     f_name = f"{workshop_code}_{message.from_user.id}_{photo.file_unique_id}.jpg"
     file_path = os.path.join(UPLOADS_DIR, f_name)

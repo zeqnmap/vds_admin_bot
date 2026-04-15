@@ -14,6 +14,9 @@ from .preparatory import router as preparatory_router
 from .rvi import router as rvi_router
 from .sales import router as sales_router
 from .welding import router as welding_router
+from .passport import router as passport_router
+from .supply import router as supply_router
+from .economics import router as economics_router
 
 main_callback_router = Router()
 main_callback_router.include_router(main_menu_router)
@@ -30,5 +33,8 @@ main_callback_router.include_router(sales_router)
 main_callback_router.include_router(kb_router)
 main_callback_router.include_router(logistics_router)
 main_callback_router.include_router(installation_router)
+main_callback_router.include_router(passport_router)
+main_callback_router.include_router(supply_router)
+main_callback_router.include_router(economics_router)
 
 __all__ = ["main_callback_router"]
