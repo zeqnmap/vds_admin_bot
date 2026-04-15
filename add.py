@@ -16,7 +16,16 @@ def main():
         return
 
     projects = [
-        ("Лукойл", "Лукойл"),]
+        ("Лукойл", "Лукойл"),
+        ("Teboil", "Teboil"),
+        ("Keruen inn", "Keruen inn"),
+        ("Compass", "Compass"),
+        ("Stadler", "Stadler"),
+        ("Helios", "Helios"),
+        ("RP", "RP"),
+        ("Другой", "Другой"),
+    ]
+
 
     count = 0
     for ws in workshops:
