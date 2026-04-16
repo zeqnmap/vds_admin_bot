@@ -194,7 +194,7 @@ class Database:
                 ]
 
     async def add_workshop_project(self, workshop_code: str, project_name: str) -> bool:
-        project_code = project_name.lower().replace(" ", "_")
+        project_code = project_name
         try:
             async with aiosqlite.connect(self.db_path) as db:
                 await db.execute(
